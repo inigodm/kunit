@@ -15,7 +15,7 @@ class TestTestCase(var methodName: String){
     }
 
     fun testSetUp(){
-        test.run()
+        test.setup()
         Assert.assertTrue(test.log == "setup ")
     }
 
