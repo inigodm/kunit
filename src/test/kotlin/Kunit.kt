@@ -6,6 +6,7 @@ fun main(args : Array<String>) {
     test.test()
     test.testFailedResult()
     test.testTestResult()
+    test.testSuite()
 }
 
 class TestTestCase(var methodName: String){
@@ -13,6 +14,14 @@ class TestTestCase(var methodName: String){
 
     fun setUp(){
         test = TestCaseRun(methodName)
+    }
+
+    fun testSuite(){
+        var suite = TestSuite()
+        suite.add(TestCaseRun("testMethod"))
+        suite.add(TestCaseRun("testBroken"))
+        var result = suite.run()
+        Assert.assertTrue("2 test run, 1 failed" == result.summary())
     }
 
     fun test(){
@@ -33,48 +42,6 @@ class TestTestCase(var methodName: String){
         test = TestCaseRun("fakemethod")
         val result = test.run()
         Assert.assertTrue(result.summary() == "1 test run, 1 failed")
-    }
-}
-
-open class TestCase(var methodName: String){
-    var log: String = ""
-    var result = TestResult()
-
-    fun run(): TestResult{
-        result.testStarted()
-        setup()
-        try {
-            val cls = this.javaClass
-            cls.getMethod(methodName).invoke(this)
-            log += "$methodName "
-        } catch (e: Exception) {
-            result.testFailed()
-        }
-        tearDown()
-        return result
-    }
-
-    fun setup(){
-        log = "setup "
-    }
-
-    fun tearDown(){
-        log += "teardown"
-    }
-
-}
-
-class TestResult(var runCount: Int = 0, var failCount: Int = 0){
-    fun testStarted(){
-        runCount++;
-    }
-
-    fun testFailed(){
-        failCount++;
-    }
-
-    fun summary(): String{
-        return "$runCount test run, $failCount failed"
     }
 }
 
