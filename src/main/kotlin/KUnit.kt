@@ -16,8 +16,6 @@ open class TestSuite(){
 }
 
 open class TestCase(var methodFilter: Predicate<Method> = Predicate{it.name.startsWith("test")}){
-    var log: String = ""
-
     fun run(): TestResult{
         var result = TestResult()
         setup()
@@ -25,12 +23,10 @@ open class TestCase(var methodFilter: Predicate<Method> = Predicate{it.name.star
             findMethods().forEach{
                 result.testStarted();
                 it.invoke(this);
-                log += "${it.name} ";
             }
         } catch (e: Exception) {
             result.testFailed()
         }
-        println(result.summary())
         tearDown()
         return result
     }
@@ -42,11 +38,9 @@ open class TestCase(var methodFilter: Predicate<Method> = Predicate{it.name.star
     }
 
     fun setup(){
-        log = "setup "
     }
 
     fun tearDown(){
-        log += "teardown"
     }
 
 }

@@ -41,8 +41,6 @@ class TestTestCase(var methodName: String){
 
     fun test(){
         val result = test.run()
-        println(test.log)
-        Assert.assertTrue(test.log == "setup method executed $methodName teardown")
         Assert.assertTrue(result.summary() == "1 test run, 0 failed")
     }
 
@@ -62,7 +60,7 @@ class TestTestCase(var methodName: String){
 
 class TestCaseRun(methodName: String): TestCase(Predicate{it.name.equals(methodName)}) {
     fun testMethod(){
-        log += "method executed "
+        println("method executed ")
     }
 
     fun testBroken(){
