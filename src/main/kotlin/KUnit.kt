@@ -1,6 +1,10 @@
-class TestSuite(){
+import java.lang.reflect.Method
+import java.util.function.Predicate
+
+open class TestSuite(){
     var testCases: MutableList<TestCase> = mutableListOf()
     var result = TestResult(0,0)
+
     fun add(testCase: TestCase){
         testCases.add(testCase)
     }
@@ -11,22 +15,30 @@ class TestSuite(){
     }
 }
 
-open class TestCase(var methodName: String){
+open class TestCase(var methodFilter: Predicate<Method> = Predicate{it.name.startsWith("test")}){
     var log: String = ""
-    var result = TestResult()
 
     fun run(): TestResult{
-        result.testStarted()
+        var result = TestResult()
         setup()
         try {
-            val cls = this.javaClass
-            cls.getMethod(methodName).invoke(this)
-            log += "$methodName "
+            findMethods().forEach{
+                result.testStarted();
+                it.invoke(this);
+                log += "${it.name} ";
+            }
         } catch (e: Exception) {
             result.testFailed()
         }
+        println(result.summary())
         tearDown()
         return result
+    }
+
+    private fun findMethods(): List<Method>{
+        return this.javaClass.methods
+            .filter(methodFilter::test)
+            .toList()
     }
 
     fun setup(){

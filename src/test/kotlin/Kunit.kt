@@ -1,4 +1,6 @@
 import org.junit.Assert
+import java.lang.Exception
+import java.util.function.Predicate
 
 fun main(args : Array<String>) {
     var test = TestTestCase("testMethod")
@@ -7,6 +9,8 @@ fun main(args : Array<String>) {
     test.testFailedResult()
     test.testTestResult()
     test.testSuite()
+    test = TestTestCase("testMethod")
+    test.testRunAllMethodsInTestCase()
 }
 
 class TestTestCase(var methodName: String){
@@ -14,6 +18,17 @@ class TestTestCase(var methodName: String){
 
     fun setUp(){
         test = TestCaseRun(methodName)
+    }
+
+    fun testRunAllMethodsInTestCase(){
+        var testtestsuite = TestTestCase2()
+        var result = testtestsuite.run()
+        Assert.assertTrue(result.summary() == "1 test run, 0 failed")
+        // Three methods, two test
+        var t = TestTestCase3()
+        result = t.run()
+        Assert.assertTrue(result.summary() == "2 test run, 0 failed")
+
     }
 
     fun testSuite(){
@@ -45,9 +60,32 @@ class TestTestCase(var methodName: String){
     }
 }
 
-class TestCaseRun(methodName: String): TestCase(methodName) {
+class TestCaseRun(methodName: String): TestCase(Predicate{it.name.equals(methodName)}) {
     fun testMethod(){
         log += "method executed "
     }
+
+    fun testBroken(){
+        throw Exception()
+    }
+
+    fun fakemethod(){
+        throw Exception()
+    }
 }
 
+class TestTestCase2(): TestCase(){
+    fun testInnerMethod(){
+        println("innermethod")
+    }
+}
+
+class TestTestCase3(): TestCase(){
+    fun testInnerMethod(){
+        println("innermethod")
+    }
+
+    fun testInnerMethod2(){
+        println("innermethod2")
+    }
+}
